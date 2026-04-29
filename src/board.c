@@ -1,86 +1,102 @@
 #include "board.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
+static const bool IS_WHITE = true;
+
 Board Board_New(void)
 {
-	Board board;
+    Board board;
 
-	for (int i = 0; i < BOARD_SIZE; ++i)
-	{
-		for (int j = 0; j < BOARD_SIZE; j += 2)
-		{
-			board.matrix[i][j].tag = CELL_BLACK;
-			board.matrix[i][j + 1].tag = CELL_WHITE;
-		}
-	}
+    for (int i = 0; i < BOARD_SIZE; ++i)
+    {
+        for (int j = 0; j < BOARD_SIZE; ++j)
+        {
+            board.matrix[i][j].tag = CELL_NONE;
+        }
+    }
 
-	return board;
+    return board;
 }
 
 void Board_Reset(Board *self)
 {
-	Cell player1 = {
-		.tag = CELL_PLAYER1,
-		.data.player1 = KIND_NORMAL,
-	};
+    Cell player1 = {
+        .tag = CELL_PLAYER1,
+        .player.kind = KIND_NORMAL,
+    };
 
-	Cell player2 = {
-		.tag = CELL_PLAYER1,
-		.data.player2 = KIND_NORMAL,
-	};
+    Cell player2 = {
+        .tag = CELL_PLAYER2,
+        .player.kind = KIND_NORMAL,
+    };
 
-	int black = 0;
-	for (int i = 0; i < 3; ++i)
-	{
-		for (int j = black; j < BOARD_SIZE - black; j += i)
-		{
-			self->matrix[i][j] = player1;
-		}
+    bool is_white = IS_WHITE;
+    for (int i = 0; i < 2; ++i)
+    {
+        for (int j = 0; j < BOARD_SIZE; ++j)
+        {
+            if (is_white)
+            {
+                self->matrix[i][j] = player1;
+            }
 
-		if (black == 0)
-		{
-			black = 1;
-		}
-		else
-		{
-			black = 0;
-		}
-	}
+            is_white = !is_white;
+        }
 
+        is_white = !is_white;
+    }
+
+    is_white = !IS_WHITE;
+    for (int i = BOARD_SIZE - 1; i > 5; --i)
+    {
+        for (int j = 0; j < BOARD_SIZE; ++j)
+        {
+            if (is_white)
+            {
+                self->matrix[i][j] = player2;
+            }
+
+            is_white = !is_white;
+        }
+
+        is_white = !is_white;
+    }
 }
 
 void Board_Draw(Board *self)
 {
-	bool is_black = true;
+    bool is_white = IS_WHITE;
 
-	for (size_t i = 0; i < BOARD_SIZE; ++i)
-	{
-		for (size_t j = 0; j < BOARD_SIZE; ++j)
-		{
-			Cell cell = self->matrix[i][j];
+    printf("  ");
+    Board_DrawTopHeader(self);
 
-			switch (cell.tag)
-			{
-				case CELL_PLAYER1: 
-					printf("\e[41m  \e[0m");
-					break;
-				case CELL_PLAYER2:
-					printf("\e[43m  \e[0m");
-					break;
-				case CELL_BLACK:
-					printf("\e[40m  \e[0m");
-					break;
-				case CELL_WHITE:
-					printf("\e[47m  \e[0m");
-					break;
-			}
+    for (int i = 0; i < BOARD_SIZE; ++i)
+    {
+        printf("%c ", 'a' + i);
 
-			is_black = !is_black;
-		}
+        for (int j = 0; j < BOARD_SIZE; ++j)
+        {
+            Cell cell = self->matrix[i][j];
 
-		printf("\n");
-		is_black = !is_black;
-	}
+            Cell_Draw(cell, is_white);
+
+            is_white = !is_white;
+        }
+
+        printf("\n");
+        is_white = !is_white;
+    }
+}
+
+void Board_DrawTopHeader(Board *self)
+{
+    for (int j = 0; j < BOARD_SIZE; ++j)
+    {
+        printf("%d ", j + 1);
+    }
+
+    printf("\n");
 }

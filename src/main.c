@@ -1,14 +1,10 @@
-#include <stdio.h>
-
-#include "board.h"
+#include "game.h"
 
 int main(void)
 {
-	Board board = Board_New();
+    Game game = Game_New();
 
-	Board_Reset(&board);
+    Game_Loop(&game);
 
-	Board_Draw(&board);
-
-	return 0;
+    return 0;
 }

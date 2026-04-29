@@ -14,24 +14,15 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
-        inherit (pkgs) lib stdenv;
+        inherit (pkgs);
       in {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs;
-            [
-              git
-              cmake
-              clang-tools
-              cmake-language-server
-              valgrind
-            ]
-            ++ lib.optionals stdenv.isLinux [
-              perf
-              hotspot
-            ];
-
-          buildInputs = with pkgs; [
-            ncurses
+          nativeBuildInputs = with pkgs; [
+            git
+            cmake
+            clang-tools
+            cmake-language-server
+            # valgrind
           ];
         };
       }

@@ -1,11 +1,16 @@
 #pragma once
 
 #include "board.h"
+#include "player.h"
 
 typedef struct Game
 {
     Board board;
-    bool is_player1;
+    Player player1;
+    Player player2;
+    Player *pCurrent;
+
+    bool isRunning;
 } Game;
 
 Game Game_New(void);

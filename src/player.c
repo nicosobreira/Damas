@@ -2,12 +2,14 @@
 
 #include <stdio.h>
 
-Player Player_New(const char *name, Color color)
+Player Player_New(const char *name, Color color, CellTag tag, Direction direction)
 {
     return (Player){
         .pieces = 0,
         .name = name,
         .color = color,
+        .tag = tag,
+        .direction = direction,
     };
 }
 

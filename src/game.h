@@ -21,5 +21,4 @@ void Game_Intro(void);
 void Game_Loop(Game *self);
 
 void Game_Input(Game *self);
-void Game_Update(Game *self);
 void Game_Draw(Game *self);

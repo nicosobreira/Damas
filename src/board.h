@@ -5,11 +5,11 @@
 
 #define BOARD_SIZE (8)
 
-typedef struct Point
+typedef struct PieceAt
 {
     int line;
     int column;
-} Point;
+} PieceAt;
 
 typedef struct Board
 {
@@ -27,8 +27,8 @@ void Board_Draw(Board *self);
 
 void Board_DrawTopHeader(Board *self);
 
-Point Board_GetCell(Board *self);
+PieceAt Board_SelectPiece(Board *self, Player *player);
 
-void Board_Move(Board *self, Point p);
+bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from);
 
-Cell Board_CellAt(Board *self, Point p);
+Cell Board_CellAt(Board *self, PieceAt p);

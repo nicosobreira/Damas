@@ -1,8 +1,6 @@
 #include "game.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "color.h"
 
@@ -35,8 +33,8 @@ static void subtitle(const char *t)
 
 Game Game_New(void)
 {
-    Player player1 = Player_New("Jogador 1", FG_RED);
-    Player player2 = Player_New("Jogador 2", FG_BLUE);
+    Player player1 = Player_New("Jogador 1", FG_RED, CELL_PLAYER1, DIRECTION_DOWN);
+    Player player2 = Player_New("Jogador 2", FG_BLUE, CELL_PLAYER2, DIRECTION_UP);
 
     Board board = Board_New();
 
@@ -65,7 +63,7 @@ void Game_Intro(void)
     subtitle("Movimentação");
 
     printf("Quando for sua vez, selecione a peça que quer mover digitando sua coordenada\n");
-    printf("Formato da coordenada: a1, ou seja, linha 'a' e coluna '1'.\n");
+    printf("Formato da coordenada: 1a, ou seja, linha 'a' e coluna '1'.\n");
     printf("Depois, digite para a onde quer mover.\n");
     printf("Você pode voltar para o passo anterior ao apertar 'r'\n");
 
@@ -83,29 +81,40 @@ void Game_Reset(Game *self)
 
 void Game_Loop(Game *self)
 {
-    Game_Intro();
-
     Game_Reset(self);
+
+    Game_Intro();
 
     while (self->isRunning)
     {
         Game_Draw(self);
 
         Game_Input(self);
-
-        Game_Update(self);
     }
 }
 
 void Game_Input(Game *self)
 {
-    Player_PrintName(self->pCurrent);
-    printf(" escolha uma peça para mover: ");
+    PieceAt to = {0};
 
-    Point p = Board_GetCell(&self->board);
+    do
+    {
+        Player_PrintName(self->pCurrent);
+        printf(" escolha uma peça para mover: ");
+        PieceAt from = Board_SelectPiece(&self->board, self->pCurrent);
 
-    printf("line = %d\n", p.line);
-    printf("column = %d\n", p.column);
+        Player_PrintName(self->pCurrent);
+        printf(" para onde quer mover? (r para voltar) ");
+
+        // TODO: Criar uma função para mostrar os passos disponíveis, se não
+        // houver nenhum, volte para a seleção
+
+        bool result = Board_MovePiece(&to, &self->board, self->pCurrent, from);
+        if (result)
+        {
+            break;
+        }
+    } while (true);
 
     if (self->pCurrent == &self->player1)
     {
@@ -115,10 +124,6 @@ void Game_Input(Game *self)
     {
         self->pCurrent = &self->player1;
     }
-}
-
-void Game_Update(Game *self)
-{
 }
 
 void Game_Draw(Game *self)

@@ -114,9 +114,37 @@ void Board_DrawTopHeader(Board *self)
     printf("\n");
 }
 
-Point Board_GetCell(Board *self)
+static bool getAt(PieceAt *p, Board *self, char digit, char letter)
 {
-    char buffer[3]; // 2 caracters + 1 '\0'
+    const char last_num = '1' + BOARD_SIZE - 1;
+    if (digit < '1' || digit > last_num)
+    {
+        printf(" o primeiro carácter deve estar entre %c e %c: ", '1', last_num);
+        return false;
+    }
+
+    const char last_char = 'a' + BOARD_SIZE - 1;
+    if (letter < 'a' || letter > last_char)
+    {
+        printf(" o segundo carácter deve estar entre %c e %c: ", 'a', last_char);
+        return false;
+    }
+
+    int line = letter - 'a';
+    int column = digit - '1';
+
+    assert(line >= 0 && line < BOARD_SIZE);
+    assert(column >= 0 && column < BOARD_SIZE);
+
+    p->line = line;
+    p->column = column;
+
+    return true;
+}
+
+PieceAt Board_SelectPiece(Board *self, Player *player)
+{
+    char buffer[3]; // 2 caracters + '\0'
     do
     {
         if (scanf("%2s", buffer) == EOF)
@@ -131,60 +159,87 @@ Point Board_GetCell(Board *self)
 
         if (strlen(buffer) != 2)
         {
-            printf("ERRO. Digite uma 1 letra e 1 número, respectivamente: ");
+            printf(" digite uma coordenada: ");
             continue;
         }
 
-        const char last_char = 'a' + BOARD_SIZE - 1;
-        if (buffer[0] < 'a' || buffer[0] > last_char)
+        PieceAt from = {0};
+
+        if (!getAt(&from, self, buffer[0], buffer[1]))
         {
-            printf("ERRO. O primeiro carácter deve estar entre '%c' e '%c': ", 'a', last_char);
             continue;
         }
 
-        const char last_num = '1' + BOARD_SIZE - 1;
-        if (buffer[1] < '1' || buffer[1] > last_num)
+        if (Board_CellAt(self, from).tag == CELL_NONE)
         {
-            printf("ERRO. O segundo carácter deve estar entre %c e %c: ", '1', last_num);
+            printf(" escolha uma peça sua: ");
             continue;
         }
 
-        int line = buffer[0] - 'a';
-        int column = buffer[1] - '1';
-        Point p = {
-            .line = line,
-            .column = column,
-        };
-
-        if (Board_CellAt(self, p).tag == CELL_NONE)
+        if (Board_CellAt(self, from).tag != player->tag)
         {
-            printf("ERRO. Indique uma peça de um jogador: ");
+            printf(" escolha uma peça do %s: ", player->name);
             continue;
         }
 
-        return p;
+        return from;
     } while (true);
 }
 
-void Board_Move(Board *self, Point start)
+bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from)
 {
-    switch (Board_CellAt(self, start).tag)
+    char buffer[3]; // 2 caracters + '\0'
+    do
     {
-    case CELL_PLAYER1:
-        break;
-    case CELL_PLAYER2:
-        break;
-    case CELL_NONE:
-        printf("ERRO. Não pode ser uma célula vazia");
-        exit(EXIT_FAILURE);
-        break;
-    }
+        if (scanf("%2s", buffer) == EOF)
+        {
+            exit(EXIT_FAILURE);
+        }
+
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF)
+        {
+        }
+
+        if (buffer[0] == 'r')
+        {
+            return false;
+        }
+
+        if (strlen(buffer) != 2)
+        {
+            printf(" digite uma coordenada: ");
+            continue;
+        }
+
+        PieceAt to = {0};
+
+        if (!getAt(&to, self, buffer[0], buffer[1]))
+        {
+            continue;
+        }
+
+        if (Board_CellAt(self, to).tag != CELL_NONE)
+        {
+            printf(" selecione um espaço vazio: ");
+            continue;
+        }
+
+        switch (player->direction)
+        {
+        case DIRECTION_DOWN:
+            break;
+        case DIRECTION_UP:
+            break;
+        }
+
+        *pTo = to;
+
+        return true;
+    } while (true);
 }
 
-Cell Board_CellAt(Board *self, Point p)
+Cell Board_CellAt(Board *self, PieceAt p)
 {
-    assert(p.line >= 0 && p.line < BOARD_SIZE);
-    assert(p.column >= 0 && p.column < BOARD_SIZE);
-
     return self->matrix[p.line][p.column];
 }

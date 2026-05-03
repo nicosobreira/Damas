@@ -6,6 +6,8 @@
 
 // Gerar uma lista de indicíces de movimentação valida
 
+// TODO: Criar uma matrix de overlay pra a seleção de uma peça
+
 static void line(const char *f)
 {
     const int size = 20;
@@ -33,8 +35,8 @@ static void subtitle(const char *t)
 
 Game Game_New(void)
 {
-    Player player1 = Player_New("Jogador 1", FG_RED, CELL_PLAYER1, DIRECTION_DOWN);
-    Player player2 = Player_New("Jogador 2", FG_BLUE, CELL_PLAYER2, DIRECTION_UP);
+    Player player1 = Player_New("Jogador 1", FG_RED, BG_RED, CELL_PLAYER1, DIRECTION_DOWN);
+    Player player2 = Player_New("Jogador 2", FG_BLUE, BG_BLUE, CELL_PLAYER2, DIRECTION_UP);
 
     Board board = Board_New();
 
@@ -95,13 +97,13 @@ void Game_Loop(Game *self)
 
 void Game_Input(Game *self)
 {
-    PieceAt to = {0};
-
+    PieceAt origin = {0};
+    PieceAt target = {0};
     do
     {
         Player_PrintName(self->pCurrent);
         printf(" escolha uma peça para mover: ");
-        PieceAt from = Board_SelectPiece(&self->board, self->pCurrent);
+        origin = Board_SelectPiece(&self->board, self->pCurrent);
 
         Player_PrintName(self->pCurrent);
         printf(" para onde quer mover? (r para voltar) ");
@@ -109,12 +111,35 @@ void Game_Input(Game *self)
         // TODO: Criar uma função para mostrar os passos disponíveis, se não
         // houver nenhum, volte para a seleção
 
-        bool result = Board_MovePiece(&to, &self->board, self->pCurrent, from);
+        bool result = Board_MovePiece(&target, &self->board, self->pCurrent, origin);
         if (result)
         {
             break;
         }
     } while (true);
+
+    Cell empty = {
+        .tag = CELL_NONE,
+    };
+
+    Cell player = {
+        .tag = self->pCurrent->tag,
+        .player.kind = KIND_NORMAL,
+    };
+
+    CellTag tag = Board_CellAtPiece(&self->board, target).tag;
+    if (tag == CELL_NONE)
+    {
+        self->board.matrix[origin.line][origin.column] = empty;
+
+        self->board.matrix[target.line][target.column] = player;
+    }
+    else if (tag != self->pCurrent->tag)
+    {
+    }
+    else
+    {
+    }
 
     if (self->pCurrent == &self->player1)
     {

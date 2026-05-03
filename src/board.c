@@ -9,6 +9,19 @@
 
 static const bool IS_WHITE = true;
 
+static int getDirection(Direction d)
+{
+    switch (d)
+    {
+    case DIRECTION_DOWN:
+        return 1;
+        break;
+    case DIRECTION_UP:
+        return -1;
+        break;
+    }
+}
+
 Board Board_New(void)
 {
     Board board;
@@ -57,7 +70,7 @@ void Board_Reset(Board *self, Player *pPlayer1, Player *pPlayer2)
     }
 
     is_white = !IS_WHITE;
-    for (int i = BOARD_SIZE - 1; i > 5; --i)
+    for (int i = BOARD_SIZE - 1; i > BOARD_SIZE - 3; --i)
     {
         for (int j = 0; j < BOARD_SIZE; ++j)
         {
@@ -99,9 +112,14 @@ void Board_Draw(Board *self)
             is_white = !is_white;
         }
 
+        printf(" %c", 'a' + i);
+
         printf("\n");
         is_white = !is_white;
     }
+
+    printf("  ");
+    Board_DrawTopHeader(self);
 }
 
 void Board_DrawTopHeader(Board *self)
@@ -170,13 +188,13 @@ PieceAt Board_SelectPiece(Board *self, Player *player)
             continue;
         }
 
-        if (Board_CellAt(self, from).tag == CELL_NONE)
+        if (Board_CellAtPiece(self, from).tag == CELL_NONE)
         {
             printf(" escolha uma peça sua: ");
             continue;
         }
 
-        if (Board_CellAt(self, from).tag != player->tag)
+        if (Board_CellAtPiece(self, from).tag != player->tag)
         {
             printf(" escolha uma peça do %s: ", player->name);
             continue;
@@ -219,19 +237,7 @@ bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from)
             continue;
         }
 
-        if (Board_CellAt(self, to).tag != CELL_NONE)
-        {
-            printf(" selecione um espaço vazio: ");
-            continue;
-        }
-
-        switch (player->direction)
-        {
-        case DIRECTION_DOWN:
-            break;
-        case DIRECTION_UP:
-            break;
-        }
+        int direction = getDirection(player->direction);
 
         *pTo = to;
 
@@ -239,7 +245,7 @@ bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from)
     } while (true);
 }
 
-Cell Board_CellAt(Board *self, PieceAt p)
+Cell Board_CellAtPiece(Board *self, PieceAt p)
 {
     return self->matrix[p.line][p.column];
 }

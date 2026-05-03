@@ -31,4 +31,4 @@ PieceAt Board_SelectPiece(Board *self, Player *player);
 
 bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from);
 
-Cell Board_CellAt(Board *self, PieceAt p);
+Cell Board_CellAtPiece(Board *self, PieceAt p);

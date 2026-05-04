@@ -2,7 +2,7 @@
 
 typedef const char *Color;
 
-#define RESET "\e[0m"
+#define RESET "\e[m"
 #define BOLD "\e[1m"
 
 #define FG_BLACK "\e[30m"
@@ -22,3 +22,6 @@ typedef const char *Color;
 #define BG_MAGENTA "\e[45m"
 #define BG_CYAN "\e[46m"
 #define BG_WHITE "\e[47m"
+
+#define CLEAR_SCREEN "\e[2J"
+#define RESET_CURSOR "\e[H"

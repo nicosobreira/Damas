@@ -8,6 +8,11 @@
 
 // TODO: Criar uma matrix de overlay pra a seleção de uma peça
 
+static void clearScreen(void)
+{
+	printf(CLEAR_SCREEN RESET_CURSOR);
+}
+
 static void line(const char *f)
 {
     const int size = 20;
@@ -35,8 +40,8 @@ static void subtitle(const char *t)
 
 Game Game_New(void)
 {
-    Player player1 = Player_New("Jogador 1", FG_RED, BG_RED, CELL_PLAYER1, DIRECTION_DOWN);
-    Player player2 = Player_New("Jogador 2", FG_BLUE, BG_BLUE, CELL_PLAYER2, DIRECTION_UP);
+    Player player1 = Player_New("Jogador 1", FG_RED, BG_RED, CELL_PLAYER1);
+    Player player2 = Player_New("Jogador 2", FG_BLUE, BG_BLUE, CELL_PLAYER2);
 
     Board board = Board_New();
 
@@ -70,13 +75,19 @@ void Game_Intro(void)
     printf("Você pode voltar para o passo anterior ao apertar 'r'\n");
 
     printf("\n");
+
+    subtitle("Comer peça");
+
+    printf("Move dentro de uma peça para come-la. O pulo é automático.\n");
+
+    printf("\n");
 }
 
 void Game_Reset(Game *self)
 {
     Board *pBoard = &self->board;
 
-    Board_Reset(pBoard, &self->player1, &self->player2);
+    Board_Reset(pBoard);
 
     self->pCurrent = &self->player1;
 }
@@ -92,53 +103,40 @@ void Game_Loop(Game *self)
         Game_Draw(self);
 
         Game_Input(self);
+
+		clearScreen();
     }
 }
 
 void Game_Input(Game *self)
 {
-    PieceAt origin = {0};
-    PieceAt target = {0};
     do
     {
-        Player_PrintName(self->pCurrent);
+        Player_DrawName(self->pCurrent);
         printf(" escolha uma peça para mover: ");
-        origin = Board_SelectPiece(&self->board, self->pCurrent);
+        PieceAt origin = Board_SelectPiece(&self->board, self->pCurrent);
 
-        Player_PrintName(self->pCurrent);
+        Player_DrawName(self->pCurrent);
         printf(" para onde quer mover? (r para voltar) ");
 
         // TODO: Criar uma função para mostrar os passos disponíveis, se não
         // houver nenhum, volte para a seleção
 
-        bool result = Board_MovePiece(&target, &self->board, self->pCurrent, origin);
+        bool result = Board_MovePiece(&self->board, self->pCurrent, origin);
         if (result)
         {
             break;
         }
     } while (true);
 
-    Cell empty = {
-        .tag = CELL_NONE,
-    };
-
-    Cell player = {
-        .tag = self->pCurrent->tag,
-        .player.kind = KIND_NORMAL,
-    };
-
-    CellTag tag = Board_CellAtPiece(&self->board, target).tag;
-    if (tag == CELL_NONE)
+    if (self->pCurrent->pieces == self->board.pieces)
     {
-        self->board.matrix[origin.line][origin.column] = empty;
+		printf("Parabéns! O ");
+		Player_DrawName(self->pCurrent);
+		printf(" ganhou!");
 
-        self->board.matrix[target.line][target.column] = player;
-    }
-    else if (tag != self->pCurrent->tag)
-    {
-    }
-    else
-    {
+        self->isRunning = false;
+		return;
     }
 
     if (self->pCurrent == &self->player1)
@@ -153,7 +151,8 @@ void Game_Input(Game *self)
 
 void Game_Draw(Game *self)
 {
-    Board *pBoard = &self->board;
+	Player_DrawScore(&self->player1);
+	Player_DrawScore(&self->player2);
 
-    Board_Draw(pBoard);
+    Board_Draw(&self->board);
 }

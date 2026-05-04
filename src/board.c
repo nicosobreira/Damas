@@ -9,22 +9,11 @@
 
 static const bool IS_WHITE = true;
 
-static int getDirection(Direction d)
-{
-    switch (d)
-    {
-    case DIRECTION_DOWN:
-        return 1;
-        break;
-    case DIRECTION_UP:
-        return -1;
-        break;
-    }
-}
-
 Board Board_New(void)
 {
     Board board;
+
+    board.pieces = 0;
 
     for (int i = 0; i < BOARD_SIZE; ++i)
     {
@@ -37,7 +26,7 @@ Board Board_New(void)
     return board;
 }
 
-void Board_Reset(Board *self, Player *pPlayer1, Player *pPlayer2)
+void Board_Reset(Board *self)
 {
     Cell cell1 = {
         .tag = CELL_PLAYER1,
@@ -88,8 +77,7 @@ void Board_Reset(Board *self, Player *pPlayer1, Player *pPlayer2)
 
     assert(pieces1 == pieces2);
 
-    Player_Reset(pPlayer1, pieces1);
-    Player_Reset(pPlayer2, pieces2);
+    self->pieces = pieces1;
 }
 
 void Board_Draw(Board *self)
@@ -204,7 +192,7 @@ PieceAt Board_SelectPiece(Board *self, Player *player)
     } while (true);
 }
 
-bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from)
+bool Board_MovePiece(Board *self, Player *player, PieceAt origin)
 {
     char buffer[3]; // 2 caracters + '\0'
     do
@@ -230,16 +218,44 @@ bool Board_MovePiece(PieceAt *pTo, Board *self, Player *player, PieceAt from)
             continue;
         }
 
-        PieceAt to = {0};
+        PieceAt target = {0};
 
-        if (!getAt(&to, self, buffer[0], buffer[1]))
+        if (!getAt(&target, self, buffer[0], buffer[1]))
         {
             continue;
         }
 
-        int direction = getDirection(player->direction);
+        CellTag tag = Board_CellAtPiece(self, target).tag;
 
-        *pTo = to;
+        Cell empty = {
+            .tag = CELL_NONE,
+        };
+
+        Cell p = self->matrix[origin.line][origin.column];
+
+        if (tag == CELL_NONE)
+        {
+            self->matrix[origin.line][origin.column] = empty;
+            self->matrix[target.line][target.column] = p;
+        }
+        else if (tag != player->tag)
+        {
+            PieceAt final = {
+                .line = target.line + (target.line - origin.line),
+                .column = target.column + (target.column - origin.column),
+            };
+
+            self->matrix[origin.line][origin.column] = empty;
+            self->matrix[target.line][target.column] = empty;
+            self->matrix[final.line][final.column] = p;
+
+            player->pieces++;
+        }
+        else
+        {
+            printf(" selecione outra peça: ");
+            continue;
+        }
 
         return true;
     } while (true);

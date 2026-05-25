@@ -65,7 +65,8 @@ install(TARGETS app
 )
 
 # Enable CPack for automatic zip/tar.gz generation
-set(CPACK_PACKAGE_NAME "damas")
-set(CPACK_PACKAGE_VERSION "1.0.0") # You can pass this via CLI later if preferred
+set(CPACK_PACKAGE_NAME "Damas")
+set(CPACK_PACKAGE_VERSION "1.0.4") # You can pass this via CLI later if preferred
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
 set(CPACK_GENERATOR "ZIP" "TGZ")
 include(CPack)

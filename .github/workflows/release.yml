@@ -23,11 +23,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up CMake
-      uses: jwlawrence/actions-setup-cmake@v2
-      with:
-        cmake-version: 'latest'
-
     # If your game uses external libraries like SDL2 or Raylib, install them here
     - name: Install Dependencies (Linux)
       if: matrix.os == 'ubuntu-latest'
@@ -35,7 +30,7 @@ jobs:
         sudo apt-get update
 
     - name: Configure CMake
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      run: cmake --preset release
 
     - name: Build Project
       run: cmake --build build --config Release

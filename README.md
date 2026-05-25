@@ -1,3 +1,15 @@
+# Damas
+
+## Build
+
+### Linux
+
+``` bash
+cmake --preset debug
+cmake --build build
+./build/app
+```
+
 # Regras do Jogo de Damas
 
 O jogo de damas brasileiro é disputado entre dois jogadores em um tabuleiro quadrado, dividido em 64 casas (8x8), alternadas entre claras e escuras. O jogo é jogado exclusivamente nas casas escuras.

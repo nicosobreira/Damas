@@ -14,16 +14,28 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = import nixpkgs {inherit system;};
-        inherit (pkgs);
+        windowsPkgs = pkgs.pkgsCross.mingwW64;
       in {
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
-            git
-            cmake
-            clang-tools
-            cmake-language-server
-            # valgrind
-          ];
+        devShells = {
+          default = pkgs.mkShell {
+            name = "native-dev";
+            nativeBuildInputs = with pkgs; [
+              git
+              cmake
+              ninja
+              clang-tools
+              cmake-language-server
+              # valgrind
+            ];
+          };
+
+          windows = windowsPkgs.mkShell {
+            name = "windows-dev";
+            nativeBuildInputs = with pkgs; [
+              cmake
+              ninja
+            ];
+          };
         };
       }
     );

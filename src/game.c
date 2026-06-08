@@ -10,7 +10,7 @@
 
 static void clearScreen(void)
 {
-	printf(CLEAR_SCREEN RESET_CURSOR);
+    printf(CLEAR_SCREEN RESET_CURSOR);
 }
 
 static void line(const char *f)
@@ -71,14 +71,13 @@ void Game_Intro(void)
 
     printf("Quando for sua vez, selecione a peça que quer mover digitando sua coordenada\n");
     printf("Formato da coordenada: 1a, ou seja, linha 'a' e coluna '1'.\n");
-    printf("Depois, digite para a onde quer mover.\n");
     printf("Você pode voltar para o passo anterior ao apertar 'r'\n");
 
     printf("\n");
 
     subtitle("Comer peça");
 
-    printf("Move dentro de uma peça para come-la. O pulo é automático.\n");
+    printf("Se mova dentro de uma peça para come-la. O pulo é automático.\n");
 
     printf("\n");
 }
@@ -104,7 +103,7 @@ void Game_Loop(Game *self)
 
         Game_Input(self);
 
-		clearScreen();
+        clearScreen();
     }
 }
 
@@ -131,12 +130,12 @@ void Game_Input(Game *self)
 
     if (self->pCurrent->pieces == self->board.pieces)
     {
-		printf("Parabéns! O ");
-		Player_DrawName(self->pCurrent);
-		printf(" ganhou!");
+        printf("Parabéns! O ");
+        Player_DrawName(self->pCurrent);
+        printf(" ganhou!");
 
         self->isRunning = false;
-		return;
+        return;
     }
 
     if (self->pCurrent == &self->player1)
@@ -151,8 +150,8 @@ void Game_Input(Game *self)
 
 void Game_Draw(Game *self)
 {
-	Player_DrawScore(&self->player1);
-	Player_DrawScore(&self->player2);
+    Player_DrawScore(&self->player1);
+    Player_DrawScore(&self->player2);
 
     Board_Draw(&self->board);
 }

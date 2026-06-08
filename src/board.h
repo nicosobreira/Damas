@@ -14,7 +14,7 @@ typedef struct PieceAt
 typedef struct Board
 {
     Cell matrix[BOARD_SIZE][BOARD_SIZE];
-	int pieces;
+    int pieces;
 } Board;
 
 /// Creates a new empty board
@@ -24,7 +24,7 @@ void Board_Reset(Board *self);
 
 void Board_Draw(Board *self);
 
-void Board_DrawTopHeader(Board *self);
+void Board_DrawTopHeader(void);
 
 PieceAt Board_SelectPiece(Board *self, Player *player);
 

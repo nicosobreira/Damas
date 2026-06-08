@@ -85,7 +85,7 @@ void Board_Draw(Board *self)
     bool is_white = IS_WHITE;
 
     printf("  ");
-    Board_DrawTopHeader(self);
+    Board_DrawTopHeader();
 
     for (int i = 0; i < BOARD_SIZE; ++i)
     {
@@ -107,10 +107,10 @@ void Board_Draw(Board *self)
     }
 
     printf("  ");
-    Board_DrawTopHeader(self);
+    Board_DrawTopHeader();
 }
 
-void Board_DrawTopHeader(Board *self)
+void Board_DrawTopHeader(void)
 {
     for (int j = 0; j < BOARD_SIZE; ++j)
     {
@@ -120,7 +120,7 @@ void Board_DrawTopHeader(Board *self)
     printf("\n");
 }
 
-static bool getAt(PieceAt *p, Board *self, char digit, char letter)
+static bool getAt(PieceAt *p, char digit, char letter)
 {
     const char last_num = '1' + BOARD_SIZE - 1;
     if (digit < '1' || digit > last_num)
@@ -171,7 +171,7 @@ PieceAt Board_SelectPiece(Board *self, Player *player)
 
         PieceAt from = {0};
 
-        if (!getAt(&from, self, buffer[0], buffer[1]))
+        if (!getAt(&from, buffer[0], buffer[1]))
         {
             continue;
         }
@@ -220,7 +220,7 @@ bool Board_MovePiece(Board *self, Player *player, PieceAt origin)
 
         PieceAt target = {0};
 
-        if (!getAt(&target, self, buffer[0], buffer[1]))
+        if (!getAt(&target, buffer[0], buffer[1]))
         {
             continue;
         }

@@ -20,7 +20,7 @@ target_compile_definitions(project_flags INTERFACE
   $<$<CONFIG:Debug>:DEBUG>
   $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
   $<$<C_COMPILER_ID:MSVC>:
-    _CRT_SECURE_NO_WARNINGS
+  _CRT_SECURE_NO_WARNINGS # Ignore the `scanf` warning
   >
 )
 

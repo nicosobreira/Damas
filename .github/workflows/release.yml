@@ -21,8 +21,7 @@ jobs:
 
       - name: Configure (Release)
         run: |
-          cmake -S . -B build `
-            -DCMAKE_BUILD_TYPE=Release `
+          cmake --preset release `
             -DCPACK_GENERATOR=NSIS
 
       - name: Build
@@ -50,8 +49,7 @@ jobs:
 
       - name: Configure (Release)
         run: |
-          cmake -S . -B build \
-            -DCMAKE_BUILD_TYPE=Release \
+          cmake --preset release \
             -DCPACK_GENERATOR=DragNDrop
 
       - name: Build
@@ -86,9 +84,8 @@ jobs:
 
       - name: Configure (Release)
         run: |
-          cmake -S . -B build \
+          cmake --preset release \
             -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=/usr
 
       - name: Build

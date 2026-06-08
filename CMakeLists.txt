@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(damas
+  VERSION 1.0.6
   LANGUAGES C
 )
 
@@ -15,69 +16,51 @@ add_executable(app ${APP_SOURCES})
 
 target_include_directories(app PRIVATE src)
 
-set(DEBUG_FLAGS
-  -g
-  -DDEBUG
+target_compile_definitions(project_flags INTERFACE
+    $<$<CONFIG:Debug>:DEBUG>
+    $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
 )
 
-set(RELEASE_FLAGS
-  -O3
-  -DNDEBUG
+target_compile_options(project_flags INTERFACE
+    $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wformat=2
+        -Werror
+        $<$<CONFIG:RelWithDebInfo>:-O3;-g;-fno-omit-frame-pointer>
+    >
+
+    $<$<C_COMPILER_ID:MSVC>:
+        /W4
+        /WX
+    >
 )
-
-set(RELWITHDEFINFO_FLAGS
-  -O3
-  -g
-  -fno-omit-frame-pointer
-  -DNDEBUG
-)
-
-if (MSVC)
-  target_compile_options(project_flags INTERFACE /W4)
-else()
-  target_compile_options(project_flags INTERFACE
-    $<$<CONFIG:Debug>:${DEBUG_FLAGS}>
-    $<$<CONFIG:Release>:${RELEASE_FLAGS}>
-    $<$<CONFIG:RelWithDebInfo>:${RELWITHDEBINFO_FLAGS}>
-  )
-
-  target_compile_options(project_flags INTERFACE
-    -Wall
-    -Wextra
-    -pedantic
-    -Wpedantic
-    -Wshadow
-    # -Wconversion
-    -Wformat=2
-    -Werror
-  )
-endif()
 
 target_compile_features(project_flags INTERFACE c_std_11)
+target_link_libraries(app PRIVATE project_flags)
 
 # -----------------------------------------------------------
 
-include(GNUInstallDirs)
-
-# Install the binary
 install(TARGETS app
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  RUNTIME DESTINATION bin
 )
 
-set(CPACK_PACKAGE_NAME "Damas")
-set(CPACK_PACKAGE_VERSION "1.0.5")
+set(CPACK_PACKAGE_NAME                "damas")
+set(CPACK_PACKAGE_VERSION             "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Jogo de Damas")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY   "damas")
+set(CPACK_STRIP_FILES                 TRUE)
 
-if(WIN32)
-    set(CPACK_SYSTEM_NAME "Windows-x64")
-    set(CPACK_GENERATOR "ZIP")
-elseif(APPLE)
-    set(CPACK_SYSTEM_NAME "macOS")
-    set(CPACK_GENERATOR "TGZ")
-else()
-    set(CPACK_SYSTEM_NAME "Linux-x64")
-    set(CPACK_GENERATOR "TGZ")
-endif()
+# Windows – NSIS installer
+set(CPACK_NSIS_DISPLAY_NAME    "Damas")
+set(CPACK_NSIS_MODIFY_PATH     OFF)
 
-set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
+# macOS – drag-and-drop bundle
+set(CPACK_DMG_VOLUME_NAME      "Damas")
+
+# Linux – plain tar.gz  (AppImage is built separately in CI)
+set(CPACK_GENERATOR            "TGZ")
 
 include(CPack)

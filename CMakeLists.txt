@@ -17,28 +17,28 @@ add_executable(app ${APP_SOURCES})
 target_include_directories(app PRIVATE src)
 
 target_compile_definitions(project_flags INTERFACE
-    $<$<CONFIG:Debug>:DEBUG>
-    $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
-    $<$<C_COMPILER_ID:MSVC>:
-      _CRT_SECURE_NO_WARNINGS
-    >
+  $<$<CONFIG:Debug>:DEBUG>
+  $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
+  $<$<C_COMPILER_ID:MSVC>:
+    _CRT_SECURE_NO_WARNINGS
+  >
 )
 
 target_compile_options(project_flags INTERFACE
-    $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Wshadow
-        -Wformat=2
-        -Werror
-        $<$<CONFIG:RelWithDebInfo>:-O3;-g;-fno-omit-frame-pointer>
-    >
+  $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>>:
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wshadow
+    -Wformat=2
+    -Werror
+    $<$<CONFIG:RelWithDebInfo>:-O3;-g;-fno-omit-frame-pointer>
+  >
 
-    $<$<C_COMPILER_ID:MSVC>:
-        /W4
-        /WX
-    >
+  $<$<C_COMPILER_ID:MSVC>:
+    /W4
+    /WX
+  >
 )
 
 target_compile_features(project_flags INTERFACE c_std_11)

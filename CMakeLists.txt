@@ -19,6 +19,9 @@ target_include_directories(app PRIVATE src)
 target_compile_definitions(project_flags INTERFACE
     $<$<CONFIG:Debug>:DEBUG>
     $<$<NOT:$<CONFIG:Debug>>:NDEBUG>
+    $<$<C_COMPILER_ID:MSVC>:
+      _CRT_SECURE_NO_WARNINGS
+    >
 )
 
 target_compile_options(project_flags INTERFACE
